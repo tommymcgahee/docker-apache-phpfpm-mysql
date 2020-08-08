@@ -1,0 +1,44 @@
+version: "3.8"
+services:
+  php:
+    build: './php/'
+    container_name: php
+    networks:
+      - backend
+    volumes:
+      - ./app/:/var/www/html/
+  apache:
+    build: './apache/'
+    container_name: apache
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - frontend
+      - backend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app/:/var/www/html/
+  mysql:
+    image: mysql:5.6.40
+    container_name: mysql
+    networks:
+      backend:
+        aliases: 
+          - database
+          - db
+    ports: 
+      - "6033:3306"
+    environment:
+      - MYSQL_DATABASE=app
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=rootpassword
+    volumes: 
+      - mysql_database:/var/lib/mysql
+networks:
+  frontend:
+  backend:
+volumes:
+  mysql_database: 
